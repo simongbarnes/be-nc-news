@@ -26,7 +26,8 @@
       ]
     }
   },
-  "GET /api/articles/:article_id": {
+  "GET /api/articles/:article_id": 
+  {
     "description": "gets an article by its id",
     "queries": [],
     "exampleResponse": {
