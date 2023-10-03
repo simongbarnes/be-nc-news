@@ -61,11 +61,41 @@ describe("/api/articles", () => {
             title: expect.any(String),
             topic: expect.any(String),
             author: expect.any(String),
-            body: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String)
           });
+        });
+      });
+  });
+  test("should include a count of comments associated with the article", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles[0].article_id).toBe(3);
+        expect(response.body.articles[0].comment_count).toBe(2);
+      });
+  });
+  test("should not include body property on articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        response.body.articles.forEach((article) => {
+          expect(article).not.toMatchObject({
+            body: expect.any(String)
+          });
+        });
+      });
+  });
+  test("should return most recent articles first", () => {
+    return request(app)
+      .get("/api/articles/")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          descending: true,
         });
       });
   });
