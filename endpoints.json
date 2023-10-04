@@ -41,5 +41,16 @@
           "comment_count": 6
         }
     }
+  },
+  "POST /api/articles/:article_id/comments": 
+  {
+    "description": "posts a comment for a spcific article",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+          "username": "fluffy_sheep",
+          "body": "This article is the best."
+        }
+    }
   }
 }
