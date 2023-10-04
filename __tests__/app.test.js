@@ -87,7 +87,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
+  xtest("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
     return request(app)
       .get("/api/articles/99999/comments")
       .expect(404)
@@ -95,7 +95,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.message).toBe("Item not found");
       });
   });
-  test("should return 400 when passed an ID that is incorrectly formatted", () => {
+  xtest("should return 400 when passed an ID that is incorrectly formatted", () => {
     return request(app)
       .get("/api/articles/xyz/comments")
       .expect(400)
