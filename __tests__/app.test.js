@@ -181,12 +181,13 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(message).toBe("Not found");
       });
   });
-  test("should return 404 when passed an article ID that is incorrectly formatted giving invalid path", () => {
+  test("should return 400 when passed an article ID that is incorrectly formatted giving invalid path", () => {
     return request(app)
-      .get("/api/articles/mistake/comments")
-      .expect(404)
+      .post("/api/articles/mistake/comments")
+      .send({ username: "icellusedkars", body: "This article is the best." })
+      .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe("Invalid path");
+        expect(body.message).toBe("Bad request");
       });
   });
   test("should respond with status 400 when passed a comment with no username", () => {
