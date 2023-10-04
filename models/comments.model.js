@@ -9,8 +9,8 @@ function selectCommentsbyArticleId(articleId) {
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({
-          status: 200,
-          message: "Article has no comments",
+          status: 404,
+          message: "Article not found",
         });
       } else {
         return rows;

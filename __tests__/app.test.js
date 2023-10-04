@@ -87,28 +87,20 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  xtest("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
+  test("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
     return request(app)
       .get("/api/articles/99999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Item not found");
+        expect(body.message).toBe("Article not found");
       });
   });
-  xtest("should return 400 when passed an ID that is incorrectly formatted", () => {
+  test("should return 400 when passed an ID that is incorrectly formatted", () => {
     return request(app)
       .get("/api/articles/xyz/comments")
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Bad request");
-      });
-  });
-  test("should return 200 with warning message when passed a valid Article ID that has no comments", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.message).toBe("Article has no comments");
       });
   });
 });
