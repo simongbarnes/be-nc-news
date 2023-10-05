@@ -12,9 +12,6 @@ function selectArticles() {
 
 function selectArticleById(articleId) {
   return db
-    // .query("SELECT * FROM articles WHERE article_id = $1;", [
-    //   articleId.article_id,
-    // ])
     .query("SELECT * FROM articles WHERE article_id = $1;", [
       articleId,
     ])

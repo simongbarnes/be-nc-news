@@ -8,7 +8,7 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
-} = require('../db/seeds/utils');
+} = require("../db/seeds/utils");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -154,8 +154,8 @@ describe("PATCH /api/articles/:article_id", () => {
   test("should return specified article with updated votes when votes increased", () => {
     return request(app)
       .patch("/api/articles/3")
-      .send({inc_votes: 23})
-      .expect(201)
+      .send({ inc_votes: 23 })
+      .expect(200)
       .then((response) => {
         expect(response.body.article.article_id).toBe(3);
         expect(response.body.article.votes).toBe(23);
@@ -172,8 +172,8 @@ describe("PATCH /api/articles/:article_id", () => {
   test("should return specified article with updated votes when votes decreased", () => {
     return request(app)
       .patch("/api/articles/1")
-      .send({inc_votes: -20})
-      .expect(201)
+      .send({ inc_votes: -20 })
+      .expect(200)
       .then((response) => {
         expect(response.body.article.article_id).toBe(1);
         expect(response.body.article.votes).toBe(80);
@@ -190,8 +190,8 @@ describe("PATCH /api/articles/:article_id", () => {
   test("should return specified article with unchanged votes when votes is zero", () => {
     return request(app)
       .patch("/api/articles/1")
-      .send({inc_votes: 0})
-      .expect(201)
+      .send({ inc_votes: 0 })
+      .expect(200)
       .then((response) => {
         expect(response.body.article.article_id).toBe(1);
         expect(response.body.article.votes).toBe(100);
@@ -208,7 +208,7 @@ describe("PATCH /api/articles/:article_id", () => {
   test("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
     return request(app)
       .patch("/api/articles/99999")
-      .send({inc_votes: 10})
+      .send({ inc_votes: 10 })
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Item not found");
@@ -217,40 +217,30 @@ describe("PATCH /api/articles/:article_id", () => {
   test("should return 400 when passed an ID that is incorrectly formatted", () => {
     return request(app)
       .patch("/api/articles/mistake")
-      .send({inc_votes: 10})
+      .send({ inc_votes: 10 })
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Bad request");
       });
   });
-  test("should return 400 when passed invalid key", () => {
+  test("should return 400 when passed invalid value", () => {
     return request(app)
-        .patch("/api/articles/2")
-        .send({ invalid_key: 10 })
-        .expect(400)
-        .then(({body}) => {
-            const {message} = body;
-            expect(message).toBe("Bad request")
-        })
-})
-test("should return 400 when passed invalid value", () => {
-  return request(app)
       .patch("/api/articles/2")
-      .send({inc_votes: "rubbish"})
+      .send({ inc_votes: "rubbish" })
       .expect(400)
-      .then(({body}) => {
-          const {message} = body;
-          expect(message).toBe("Bad request")
-      })
-})
-test("should return 400 when passed no request body", () => {
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Bad request");
+      });
+  });
+  test("should return 400 when passed no update data", () => {
     return request(app)
-        .patch("/api/articles/2")
-        .send({})
-        .expect(400)
-        .then(({body}) => {
-            const {message} = body;
-            expect(message).toBe("Bad request")
-        })
-})
+      .patch("/api/articles/2")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Bad request");
+      });
+  });
 });

@@ -19,7 +19,7 @@ function patchArticle(req, res, next) {
     const {article_id} = req.params;
     
     return updateArticle(article_id, changes)
-        .then(article => res.status(201).send({article}))
+        .then(article => res.status(200).send({article}))
         .catch(err => next(err));
 }
 
