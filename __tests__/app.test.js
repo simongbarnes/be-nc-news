@@ -151,11 +151,80 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("should respond with status 201 and an accurate representation of the posted comment as an object", () => {
     return request(app)
       .post("/api/articles/5/comments")
       .send({ username: "icellusedkars", body: "This article is the best." })
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String)
+        });
+        expect(comment.author).toBe("icellusedkars");
+        expect(comment.body).toBe("This article is the best.");
+      });
+  });
+  test("should respond with status 201 when passed unnecessary properties and ignore the unnecessary properties", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({ username: "icellusedkars", body: "This article is the best.", unnecessary: "property" })
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
