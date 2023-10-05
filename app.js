@@ -1,9 +1,8 @@
 const express = require("express");
 const { getEndpoints } = require("./controllers/endpoints.controller");
 const getTopics = require("./controllers/topics.controller");
-const removeComment = require("./controllers/comments.controller")
 const { getArticleById, getArticles, patchArticle } = require("./controllers/articles.controller");
-const {getCommentsbyArticleId, postCommentByArticleId} = require("./controllers/comments.controller");
+const {getCommentsbyArticleId, postCommentByArticleId, removeComment} = require("./controllers/comments.controller");
 
 const app = express();
 
