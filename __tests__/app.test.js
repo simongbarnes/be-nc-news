@@ -385,3 +385,30 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("should delete a specified comment and respond with 204 and no content", () => {
+    return request(app)
+      .delete("/api/comments/6")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toBeEmptyObject();
+      });
+  });
+  test("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
+    return request(app)
+      .delete("/api/comments/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Item not found");
+      });
+  });
+  test("should return 400 when passed an ID that is incorrectly formatted", () => {
+    return request(app)
+      .delete("/api/comments/mistake")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});
