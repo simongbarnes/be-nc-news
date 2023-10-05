@@ -49,12 +49,13 @@ describe("/api", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
-  test("should return an array of comments with correct properties", () => {
+  test("should return an array of comments for the specified article with correct length and properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
       .then((response) => {
         response.body.comments.forEach((comment) => {
+          expect(response.body.comments.length).toBe(11);
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             body: expect.any(String),
@@ -63,17 +64,9 @@ describe("/api/articles/:article_id/comments", () => {
             votes: expect.any(Number),
             created_at: expect.any(String),
           });
-        });
-      });
-  });
-  test("should return all comments for a specified article", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.comments.length).toBe(11);
-        response.body.comments.forEach((comment) => {
-          expect(comment.article_id).toBe(1);
+          response.body.comments.forEach((comment) => {
+            expect(comment.article_id).toBe(1);
+          });
         });
       });
   });
