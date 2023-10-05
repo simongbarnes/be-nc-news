@@ -200,3 +200,93 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("should respond with status 201 and an accurate representation of the posted comment as an object", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({ username: "icellusedkars", body: "This article is the best." })
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String)
+        });
+        expect(comment.author).toBe("icellusedkars");
+        expect(comment.body).toBe("This article is the best.");
+      });
+  });
+  test("should respond with status 201 when passed unnecessary properties and ignore the unnecessary properties", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({ username: "icellusedkars", body: "This article is the best.", unnecessary: "property" })
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String)
+        });
+        expect(comment.author).toBe("icellusedkars");
+        expect(comment.body).toBe("This article is the best.");
+      });
+  });
+  test("should respond with status 404 when passed a comment for an article that does not exist", () => {
+    return request(app)
+      .post("/api/articles/99999/comments")
+      .send({ username: "icellusedkars", body: "This article is the best." })
+      .expect(404)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Not found");
+      });
+  });
+  test("should return 400 when passed an article ID that is incorrectly formatted giving invalid path", () => {
+    return request(app)
+      .post("/api/articles/mistake/comments")
+      .send({ username: "icellusedkars", body: "This article is the best." })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("should respond with status 400 when passed a comment with no username", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({ body: "Nice article." })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Author missing");
+      });
+  });
+  test("should respond with status 400 when passed a comment with no body", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({ username: "icellusedkars" })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Comment missing");
+      });
+  });
+  test("should respond with status 404 when passed a comment for an author that does not exist", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({ username: "fluffy_sheep", body: "This article is the best." })
+      .expect(404)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Not found");
+      });
+  });
+});
