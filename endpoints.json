@@ -12,6 +12,7 @@
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
+    "requestFormat": "topic query (filter by topic) must provide an existing topic.",
     "exampleResponse": {
       "articles": [
         {

@@ -8,7 +8,7 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
-} = require('../db/seeds/utils');
+} = require("../db/seeds/utils");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -149,4 +149,25 @@ describe("/api/articles/:article_id", () => {
         expect(body.message).toBe("Bad request");
       });
   });
+});
+describe("/api/articles", () => {
+  test("should filter articles by a specified topic when passed that topic in a query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(12);
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("send status 200 and no results when queried with a valid topic which has no articles", () => {
+    return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles.length).toBe(0);
+        })
+})
 });

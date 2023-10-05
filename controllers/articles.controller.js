@@ -1,7 +1,8 @@
 const { selectArticleById, selectArticles } = require('../models/articles.model.js');
 
 function getArticles(req, res, next) {
-    selectArticles()
+    const {topic} = req.query;
+    selectArticles(topic)
     .then((articles) => res.status(200).send({articles}))
     .catch(next);
 };
