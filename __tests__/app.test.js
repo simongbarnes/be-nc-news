@@ -150,6 +150,24 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+
+describe("/api/users", () => {
+  test("should return all users in an array of objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users.length).toBe(4);
+        response.body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String)
+          });
+        });
+      });
+  });
+});
       
 describe("/api/articles/:article_id/comments", () => {
   test("should return an array of comments for the specified article with correct length and properties", () => {
