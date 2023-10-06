@@ -1,9 +1,14 @@
 const { selectArticleById, selectArticles, updateArticle } = require('../models/articles.model.js');
+const {checkTopicExists} = require("../models/topics.model");
 
 function getArticles(req, res, next) {
-    selectArticles()
-    .then((articles) => res.status(200).send({articles}))
-    .catch(next);
+    const {topic} = req.query;
+
+        checkTopicExists(topic)
+        .then((slug) => {return selectArticles(slug)})
+        .then((articles) => {res.status(200).send({articles})
+        })
+        .catch(next)
 };
 
 function getArticleById(req, res, next) {

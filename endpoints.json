@@ -22,6 +22,7 @@
       "sort_by",
       "order"
     ],
+    "requestFormat": "topic query (filter by topic) must provide an existing topic.",
     "exampleResponse": {
       "articles": [
         {

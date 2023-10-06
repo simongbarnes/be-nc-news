@@ -430,3 +430,33 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+describe("/api/articles", () => {
+  test("should filter articles by a specified topic when passed that topic in a query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(12);
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("send status 200 and no results when queried with a valid topic which has no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(0);
+      });
+  });
+  test("send status 404 when passed a topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=not_a_real_topic5678")
+      .expect(404)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Topic does not exist");
+      });
+  });
+});
