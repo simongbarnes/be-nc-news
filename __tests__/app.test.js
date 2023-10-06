@@ -164,10 +164,19 @@ describe("/api/articles", () => {
   });
   test("send status 200 and no results when queried with a valid topic which has no articles", () => {
     return request(app)
-        .get("/api/articles?topic=paper")
-        .expect(200)
-        .then(({body}) => {
-            expect(body.articles.length).toBe(0);
-        })
-})
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(0);
+      });
+  });
+  test("send status 404 when passed a topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=not_a_real_topic5678")
+      .expect(404)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Topic does not exist");
+      });
+  });
 });
