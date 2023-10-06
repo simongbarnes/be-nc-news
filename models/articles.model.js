@@ -1,23 +1,22 @@
 const db = require("../db/connection");
-const { checkTopicExists } = require("../models/topics.model");
 
 function selectArticles(topicArg) {
+  const queryArgs = [];
   let queryStr =
     "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id)::INT comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id";
 
   if (topicArg) {
+    queryArgs.push(topicArg);
     queryStr +=
-      " WHERE articles.topic = $1 GROUP BY articles.article_id ORDER By articles.created_at DESC;"
-    return db.query(queryStr, [topicArg]).then(({ rows }) => {
-      return rows;
-    });
-  } else {
-    queryStr +=
-      " GROUP BY articles.article_id ORDER By articles.created_at DESC;";
-    return db.query(queryStr).then(({ rows }) => {
-      return rows;
-    });
+      " WHERE articles.topic = $1"
   }
+    queryStr +=
+      " GROUP BY articles.article_id ORDER BY articles.created_at DESC;";
+
+    return db.query(queryStr, queryArgs).then(({ rows }) => {
+      return rows;
+    });
+
 }
 
 function selectArticleById(articleId) {

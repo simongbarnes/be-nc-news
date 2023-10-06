@@ -7,6 +7,10 @@ function selectTopics() {
 }
 
 function checkTopicExists(topic) {
+  if(!topic){
+    return new Promise((resolve, reject) => {
+      return resolve("")})
+  }
   return db
     .query("SELECT * FROM topics WHERE slug = $1;", [topic])
     .then(({ rows }) => {
