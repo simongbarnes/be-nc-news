@@ -94,13 +94,89 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("should return most recent articles first", () => {
+  test("should return most recent articles first when passed no sort_by or order queries", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
         expect(response.body.articles).toBeSortedBy("created_at", {
           descending: true,
+        });
+      });
+  });
+  test("should return articles in descending order of title when passed query sort_by='title' and there is no order query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("title", {
+          descending: true,
+        });
+      });
+  });
+  test("should return articles in descending order of author when passed query sort_by='author' and order='desc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&&order=desc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("author", {
+          descending: true,
+        });
+      });
+  });
+  test("should return articles in ascending order of created_at when passed query sort_by='created_at' and order='asc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          descending: false,
+        });
+      });
+  });
+  test("should return articles in descending order of votes when passed query sort_by='votes'and order='desc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&&order=desc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("votes", {
+          descending: true,
+        });
+      });
+  });
+  test("should return articles in descending order of comment_count when passed query sort_by='comment_count'and order='desc'", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&&order=desc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("comment_count", {
+          descending: true,
+        });
+      });
+  });
+  test("should return error 400 when passed a sort_by query for an ineligible column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid-sort")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid sort_by query");
+      });
+  });
+  test("should return error 400 when passed an invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=invalid-order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid order query");
+      });
+  });
+  test("should return articles in ascending order of title when passed queries topic=mitch sort_by=title and order asc", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&&sort_by=title&&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("title", {
+          descending: false,
         });
       });
   });
