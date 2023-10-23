@@ -4,8 +4,11 @@ const getTopics = require("./controllers/topics.controller");
 const { getArticleById, getArticles, patchArticle } = require("./controllers/articles.controller");
 const {getCommentsbyArticleId, postCommentByArticleId, removeComment} = require("./controllers/comments.controller");
 const getUsers = require("./controllers/users.controller");
+const cors = require('cors');
 
 const app = express();
+
+app.use(cors());
 
 app.get("/api", getEndpoints);
 
