@@ -54,4 +54,15 @@ function deleteComment(commentId) {
   });
 }
 
-module.exports = {selectCommentsbyArticleId, createCommentByArticleId, deleteComment};
+function updateComment(commentId, changes) {
+  return selectCommentById(commentId)
+    .then(() => {
+      return db.query(
+        "UPDATE comments SET votes = votes + $2 WHERE comment_id = $1 RETURNING *;",
+        [commentId, changes.inc_votes]
+      );
+    })
+    .then(({ rows }) => rows[0]);
+}
+
+module.exports = {selectCommentsbyArticleId, createCommentByArticleId, deleteComment, updateComment};
