@@ -560,3 +560,92 @@ describe("/api/articles", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("should return specified comment with updated votes when votes increased", () => {
+    return request(app)
+      .patch("/api/comments/3")
+      .send({ inc_votes: 23 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment.comment_id).toBe(3);
+        expect(response.body.comment.votes).toBe(123);
+        expect(response.body.comment).toMatchObject({
+          body: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          article_id: expect.any(Number)
+        });
+      });
+  });
+  test("should return specified comment with updated votes when votes decreased", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -20 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment.comment_id).toBe(1);
+        expect(response.body.comment.votes).toBe(-4);
+        expect(response.body.comment).toMatchObject({
+          body: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          article_id: expect.any(Number)
+        });
+      });
+  });
+  test("should return specified article with unchanged votes when votes is zero", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 0 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment.comment_id).toBe(1);
+        expect(response.body.comment.votes).toBe(16);
+        expect(response.body.comment).toMatchObject({
+          body: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          article_id: expect.any(Number)
+        });
+      });
+  });
+  test("should return 404 when passed an ID that is correctly formatted but does not exist", () => {
+    return request(app)
+      .patch("/api/comments/99999")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Item not found");
+      });
+  });
+  test("should return 400 when passed an ID that is incorrectly formatted", () => {
+    return request(app)
+      .patch("/api/comments/mistake")
+      .send({ inc_votes: 10 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  test("should return 400 when passed invalid value", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: "rubbish" })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Bad request");
+      });
+  });
+  test("should return 400 when passed no update data", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Bad request");
+      });
+  });
+});
