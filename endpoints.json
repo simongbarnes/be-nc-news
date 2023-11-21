@@ -68,15 +68,14 @@
       ]
     }
   },
-  "POST /api/articles/:article_id/comments": 
-  {
+  "POST /api/articles/:article_id/comments": {
     "description": "posts a comment for a spcific article",
     "queries": [],
     "exampleResponse": {
       "comment": {
-          "username": "fluffy_sheep",
-          "body": "This article is the best."
-        }
+        "username": "fluffy_sheep",
+        "body": "This article is the best."
+      }
     }
   },
   "GET /api/users": {
@@ -96,12 +95,11 @@
     "description": "serves a user object matching the specified username",
     "queries": [],
     "exampleResponse": {
-      "user": 
-        {
-          "username": "fluffy_sheep",
-          "name": "Euros",
-          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
-        }
+      "user": {
+        "username": "fluffy_sheep",
+        "name": "Euros",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+      }
     }
   },
   "PATCH /api/articles/:article_id": {
@@ -120,8 +118,21 @@
       }
     }
   },
-  "DELETE /api/comments/:comment_id": 
-  {
+  "PATCH /api/comments/:comment_id": {
+    "description": "increases or decreases the votes for a specified comment and responds with the updated object.",
+    "queries": [],
+    "requestFormat": "an object containing the key inc_votes and a value representing the value by which the votes should be increased. e.g. {inc_votes: 1} will increase the votes by one, {inc_votes: -10} will decrease the votes by 10.",
+    "exampleResponse": {
+      "comment": {
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "votes": 16,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "created_at": 1586179020000
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
     "description": "deletes a specified comment",
     "queries": [],
     "exampleResponse": {}
