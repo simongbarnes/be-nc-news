@@ -1,4 +1,4 @@
-const selectUsers = require("../models/users.model");
+const { selectUsers, selectUserByUsername } = require("../models/users.model");
 
 function getUsers(req, res, next) {
     selectUsers()
@@ -6,4 +6,16 @@ function getUsers(req, res, next) {
     .catch(next);
 };
 
-module.exports = getUsers;
+function getUserByUsername(req, res, next) {
+    selectUserByUsername(req.params.username)
+    .then((user) => {
+        if (!user) {
+            res.status(404).send({message: "User not found"})
+        }else{
+            res.status(200).send({user})
+        }
+    })
+    .catch(next);
+};
+
+module.exports = { getUsers, getUserByUsername };
