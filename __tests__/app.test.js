@@ -244,6 +244,30 @@ describe("/api/users", () => {
       });
   });
 });
+
+describe("/api/users/:username", () => {
+  test("should return a matching user object with correct properties when passed an existing username", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then((response) => {
+          expect(response.body.user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String)
+          });
+          expect(response.body.user.username).toBe("icellusedkars");
+      });
+  });
+  test("should return 404 when passed a username that is correctly formatted but does not exist", () => {
+    return request(app)
+      .get("/api/users/thisuserdoesnotexist")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("User not found");
+      });
+  });
+});
       
 describe("/api/articles/:article_id/comments", () => {
   test("should return an array of comments for the specified article with correct length and properties", () => {
