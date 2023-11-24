@@ -8,7 +8,7 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
-} = require('../db/seeds/utils');
+} = require("../db/seeds/utils");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -31,7 +31,7 @@ describe("/api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((response) => {
-        expect(response.body.topics.length).toBe(3);
+        expect(response.body.topics.length).toBe(4);
         response.body.topics.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
@@ -238,7 +238,7 @@ describe("/api/users", () => {
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
-            avatar_url: expect.any(String)
+            avatar_url: expect.any(String),
           });
         });
       });
@@ -251,12 +251,12 @@ describe("/api/users/:username", () => {
       .get("/api/users/icellusedkars")
       .expect(200)
       .then((response) => {
-          expect(response.body.user).toMatchObject({
-            username: expect.any(String),
-            name: expect.any(String),
-            avatar_url: expect.any(String)
-          });
-          expect(response.body.user.username).toBe("icellusedkars");
+        expect(response.body.user).toMatchObject({
+          username: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+        expect(response.body.user.username).toBe("icellusedkars");
       });
   });
   test("should return 404 when passed a username that is correctly formatted but does not exist", () => {
@@ -268,7 +268,7 @@ describe("/api/users/:username", () => {
       });
   });
 });
-      
+
 describe("/api/articles/:article_id/comments", () => {
   test("should return an array of comments for the specified article with correct length and properties", () => {
     return request(app)
@@ -333,7 +333,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           article_id: expect.any(Number),
           author: expect.any(String),
           votes: expect.any(Number),
-          created_at: expect.any(String)
+          created_at: expect.any(String),
         });
         expect(comment.author).toBe("icellusedkars");
         expect(comment.body).toBe("This article is the best.");
@@ -342,7 +342,11 @@ describe("POST /api/articles/:article_id/comments", () => {
   test("should respond with status 201 when passed unnecessary properties and ignore the unnecessary properties", () => {
     return request(app)
       .post("/api/articles/5/comments")
-      .send({ username: "icellusedkars", body: "This article is the best.", unnecessary: "property" })
+      .send({
+        username: "icellusedkars",
+        body: "This article is the best.",
+        unnecessary: "property",
+      })
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
@@ -352,7 +356,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           article_id: expect.any(Number),
           author: expect.any(String),
           votes: expect.any(Number),
-          created_at: expect.any(String)
+          created_at: expect.any(String),
         });
         expect(comment.author).toBe("icellusedkars");
         expect(comment.body).toBe("This article is the best.");
@@ -550,13 +554,13 @@ describe("/api/articles", () => {
         expect(body.articles.length).toBe(0);
       });
   });
-  test("send status 404 when passed a topic that does not exist", () => {
+  test("send status 400 when queried with an invalid topic", () => {
     return request(app)
-      .get("/api/articles?topic=not_a_real_topic5678")
-      .expect(404)
+      .get("/api/articles?topic=mitch;not_a_real_topic5678")
+      .expect(400)
       .then(({ body }) => {
         const { message } = body;
-        expect(message).toBe("Topic does not exist");
+        expect(message).toBe("Topic not valid");
       });
   });
 });
@@ -574,7 +578,7 @@ describe("PATCH /api/comments/:comment_id", () => {
           body: expect.any(String),
           author: expect.any(String),
           created_at: expect.any(String),
-          article_id: expect.any(Number)
+          article_id: expect.any(Number),
         });
       });
   });
@@ -590,7 +594,7 @@ describe("PATCH /api/comments/:comment_id", () => {
           body: expect.any(String),
           author: expect.any(String),
           created_at: expect.any(String),
-          article_id: expect.any(Number)
+          article_id: expect.any(Number),
         });
       });
   });
@@ -606,7 +610,7 @@ describe("PATCH /api/comments/:comment_id", () => {
           body: expect.any(String),
           author: expect.any(String),
           created_at: expect.any(String),
-          article_id: expect.any(Number)
+          article_id: expect.any(Number),
         });
       });
   });
@@ -648,4 +652,276 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(message).toBe("Bad request");
       });
   });
+});
+
+describe("POST /api/articles", () => {
+  test("should respond with status 201 and an accurate representation of the posted article as an object when passed a valid article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: expect.any(Number),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+        expect(article.title).toBe(
+          "Why Wigan Athletic are the best club in the EFL"
+        ),
+          expect(article.topic).toBe("football"),
+          expect(article.author).toBe("icellusedkars"),
+          expect(article.body).toBe(
+            "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup."
+          ),
+          expect(article.article_img_url).toBe(
+            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE"
+          );
+      });
+  });
+  test("should respond with status 400 when passed an non-string username", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: 999,
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Author missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed a zero length string username", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "",
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Author missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed no username", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        body: "Wigan Athletic are undoubtably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Author missing or invalid");
+      });
+  });
+  test("should respond with status 404 when passed a username for a user that doesn't exist", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "ThisUserDoesNotExist",
+        body: "Wigan Athletic are undoubtably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Not found");
+      });
+  });
+  test("should respond with status 400 when passed an non-string topic", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: 999,
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Topic missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed a zero length string topic", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Topic missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed no topic", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        username: "icellusedkars",
+        title: "Why Wigan Athletic are the best club in the EFL",
+        body: "Wigan Athletic are undoubtably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Topic missing or invalid");
+      });
+  });
+  test("should respond with status 404 when passed a topic that doesn't exist", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        body: "Wigan Athletic are undoubtably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "ThisTopicDoesNotExist",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Not found");
+      });
+  });
+
+  test("should respond with status 400 when passed an non-string title", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: 999,
+        username: "icellusedkars",
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Title missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed a zero length string title", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "",
+        username: "icellusedkars",
+        body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Title missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed no title", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        username: "icellusedkars",
+        topic: "football",
+        body: "Wigan Athletic are undoubtably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Title missing or invalid");
+      });
+  });
+
+  test("should respond with status 400 when passed an non-string body", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        body: 999,
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Article content missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed a zero length string body", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        body: "",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Article content missing or invalid");
+      });
+  });
+  test("should respond with status 400 when passed no body", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Why Wigan Athletic are the best club in the EFL",
+        username: "icellusedkars",
+        topic: "football",
+        articleImageUrl:
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Article content missing or invalid");
+      });
+  });
+
 });

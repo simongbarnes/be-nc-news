@@ -2,20 +2,16 @@ const {
   selectArticleById,
   selectArticles,
   updateArticle,
+  createArticle,
 } = require("../models/articles.model.js");
-const { checkTopicExists } = require("../models/topics.model");
 
 function getArticles(req, res, next) {
-  const { topic, sort_by, order } = req.query;
 
-  checkTopicExists(req.query)
-    .then((args) => {
-      return selectArticles(args);
-    })
-    .then((articles) => {
-      res.status(200).send({ articles });
-    })
-    .catch(next);
+  selectArticles(req.query)
+  .then((articles) => {
+    res.status(200).send({ articles });
+  })
+  .catch(next);
 }
 
 function getArticleById(req, res, next) {
@@ -35,4 +31,12 @@ function patchArticle(req, res, next) {
     .catch((err) => next(err));
 }
 
-module.exports = { getArticleById, getArticles, patchArticle };
+function addArticle(req, res, next) {
+  const postedArticle = req.body;
+
+  return createArticle(postedArticle)
+    .then((article) => res.status(201).send({ article }))
+    .catch((err) => next(err));
+}
+
+module.exports = { getArticleById, getArticles, patchArticle, addArticle };
