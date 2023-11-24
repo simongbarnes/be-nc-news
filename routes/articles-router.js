@@ -1,10 +1,11 @@
-const { getArticleById, getArticles, patchArticle } = require('../controllers/articles.controller');
+const { getArticleById, getArticles, patchArticle, addArticle } = require('../controllers/articles.controller');
 const { getCommentsbyArticleId, postCommentByArticleId } = require('../controllers/comments.controller');
 const articleRouter = require('express').Router();
 
 articleRouter
 .route("/")
-.get(getArticles);
+.get(getArticles)
+.post(addArticle);
 
 articleRouter
 .route("/:article_id")
