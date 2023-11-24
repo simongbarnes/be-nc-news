@@ -664,15 +664,14 @@ describe("POST /api/articles", () => {
         body: "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup.",
         topic: "football",
         articleImageUrl:
-          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE",
+          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE"
       })
       .expect(201)
       .then(({ body }) => {
         const { article } = body;
         expect(article).toMatchObject({
           article_id: expect.any(Number),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
+          created_at: expect.any(String)
         });
         expect(article.title).toBe(
           "Why Wigan Athletic are the best club in the EFL"
@@ -682,6 +681,8 @@ describe("POST /api/articles", () => {
           expect(article.body).toBe(
             "Wigan Athletic are undoutably the best club in the EFL. They have withstood blow after blow in recent years but still they press on with optimism and belief. And let's not forget that time they won the FA Cup."
           ),
+          expect(article.comment_count).toBe(0),
+          expect(article.votes).toBe(0),
           expect(article.article_img_url).toBe(
             "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ccfc.co.uk%2Fnews%2F2022%2Fjune%2Fgetting-to-know-wigan-athletic%2F&psig=AOvVaw0gXPkXOqYpm1_NMCDthuVl&ust=1700913023342000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKiiivbI3IIDFQAAAAAdAAAAABAE"
           );
