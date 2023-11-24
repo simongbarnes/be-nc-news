@@ -104,7 +104,7 @@ function createArticle(article) {
 
   return db
     .query(
-      "INSERT INTO articles (title, author, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
+      "INSERT INTO articles (title, author, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *, 0 AS comment_count;",
       [title, username, body, topic, articleImageUrl]
     )
     .then(({ rows }) => rows[0]);
