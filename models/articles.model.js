@@ -5,7 +5,10 @@ async function selectArticles({
   topic,
   sort_by = "created_at",
   order = "DESC",
+  limit = "10",
+  p = "1"
 }) {
+
   const queryArgs = [];
 
   const sortByGreenList = [
@@ -19,6 +22,16 @@ async function selectArticles({
 
   order = order.toUpperCase();
 
+  if (!/^\d+$/.test(limit)){
+    return Promise.reject({ status: 400, message: "Limit not valid" });
+  }
+
+  if (!/^\d+$/.test(p)){
+    return Promise.reject({ status: 400, message: "Page(p) not valid" });
+  }
+
+  const offset = ((p-1)* limit);
+  
   if (topic) {
     try {
       const slugs = await selectTopicSlugs();
@@ -49,7 +62,7 @@ async function selectArticles({
     queryStr += ` WHERE articles.topic = '${topic}'`;
   }
 
-  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset};`;
 
   return db.query(queryStr).then(({ rows }) => {
     return rows;
