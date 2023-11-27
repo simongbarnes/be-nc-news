@@ -54,12 +54,11 @@ describe("/api", () => {
 });
 
 describe("/api/articles", () => {
-  test("should return all articles in an array of objects", () => {
+  test("should return  articles in an array of objects with correct properties", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles.length).toBe(13);
         response.body.articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -73,6 +72,71 @@ describe("/api/articles", () => {
         });
       });
   });
+  test("should return first 10 articles when limit and p queries not included", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(10);
+        expect(response.body.articles[0].article_id).toBe(3);
+      });
+  });
+  test("should return first 5 articles when limit = 5 and p query not included", () => {
+    return request(app)
+      .get("/api/articles?limit=5")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(5);
+        expect(response.body.articles[0].article_id).toBe(3);
+      });
+  });
+  test("should return first 5 articles when limit = 5 and p = 1", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=1")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(5);
+        expect(response.body.articles[0].article_id).toBe(3);
+      });
+  });
+  test("should return second 4 articles when limit = 4 and p = 2", () => {
+    return request(app)
+      .get("/api/articles?limit=4&p=2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(4);
+        expect(response.body.articles[0].article_id).toBe(13);
+      });
+  });
+  test("should return last 3 articles when limit = 5 and p = 3", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=3")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(3);
+        expect(response.body.articles[0].article_id).toBe(8);
+      });
+  });
+  test("should send status 400 when passed a limit containing any non-numeric characters", () => {
+    return request(app)
+      .get("/api/articles?limit=x10")
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Limit not valid");
+      });
+  });
+  test("should send status 400 when passed a p query containing any non-numeric characters", () => {
+    return request(app)
+      .get("/api/articles?p=z2")
+      .expect(400)
+      .then(({ body }) => {
+        const { message } = body;
+        expect(message).toBe("Page(p) not valid");
+      });
+  });
+
+
   test("should include a count of comments associated with the article", () => {
     return request(app)
       .get("/api/articles")
@@ -537,12 +601,12 @@ describe("DELETE /api/comments/:comment_id", () => {
 describe("/api/articles", () => {
   test("should filter articles by a specified topic when passed that topic in a query", () => {
     return request(app)
-      .get("/api/articles?topic=mitch")
+      .get("/api/articles?topic=cats")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.length).toBe(12);
+        expect(body.articles.length).toBe(1);
         body.articles.forEach((article) => {
-          expect(article.topic).toBe("mitch");
+          expect(article.topic).toBe("cats");
         });
       });
   });
