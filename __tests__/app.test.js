@@ -135,6 +135,14 @@ describe("/api/articles", () => {
         expect(message).toBe("Page(p) not valid");
       });
   });
+  test("should return empty array when p exceeds the number of pages possible for the number of articles", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=20")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(0);
+      });
+  });
   test("should include a count of comments associated with the article", () => {
     return request(app)
       .get("/api/articles")
@@ -276,7 +284,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/99999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Item not found");
+        expect(body.message).toBe("Article not found");
       });
   });
   test("should return 400 when passed an ID that is incorrectly formatted", () => {
@@ -397,6 +405,14 @@ describe("/api/articles/:article_id/comments", () => {
         response.body.comments.forEach((comment) => {
           expect(comment.article_id).toBe(1);
         });
+      });
+  });
+  test("should return an empty array when p exceeds the number of pages possible for the number of comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=20")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(0);
       });
   });
   test("should send status 400 when passed a limit containing any non-numeric characters", () => {
@@ -590,7 +606,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: 10 })
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Item not found");
+        expect(body.message).toBe("Article not found");
       });
   });
   test("should return 400 when passed an ID that is incorrectly formatted", () => {

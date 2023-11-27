@@ -20,9 +20,11 @@
       "author",
       "topic",
       "sort_by",
-      "order"
+      "order",
+      "limit",
+      "p"
     ],
-    "requestFormat": "topic query (filter by topic) must provide an existing topic.",
+    "requestFormat": "topic query (filter by topic) must provide an existing topic. sort_by query can sort on columns title, author, created_at, votes or comment_count. order can be ASC or DESC. limit query limits the number of lines returned and must be an integer. limit defaults to 10. p query specifies which page of results will be returned. p must be an integer and defaults to 1.",
     "exampleResponse": {
       "articles": [
         {
@@ -85,7 +87,11 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments for a specified article, with most recent comments first",
-    "queries": [],
+    "queries": [
+      "limit",
+      "p"
+    ],
+    "requestFormat": "limit query limits the number of lines returned and must be an integer. limit defaults to 10. p query specifies which page of results will be returned. p must be an integer and defaults to 1.",
     "exampleResponse": {
       "comments": [
         {
