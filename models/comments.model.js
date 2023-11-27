@@ -1,21 +1,36 @@
 const db = require("../db/connection");
+const { selectArticleById } = require("./articles.model");
 
-function selectCommentsbyArticleId(articleId) {
+async function selectCommentsbyArticleId({article_id}, {limit = 10, p = 1}) {
+
+  await selectArticleById(article_id)
+  .catch((err) => {
+    if (err.status){
+      return Promise.reject({ status: err.status, message: err.message });
+    } else {
+      return err;
+    }
+  });
+
+  if (!/^\d+$/.test(limit)){
+    return Promise.reject({ status: 400, message: "Limit not valid" });
+  }
+
+  if (!/^\d+$/.test(p)){
+    return Promise.reject({ status: 400, message: "Page(p) not valid" });
+  }
+
+  const offset = ((p - 1)* limit);
+
   return db
     .query(
-      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
-      [articleId.article_id]
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;",
+      [article_id, limit, offset]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          message: "Article not found",
-        });
-      } else {
         return rows;
       }
-    })
+    )
 }
 
 function selectCommentById(commentId) {
