@@ -17,7 +17,7 @@ function postCommentByArticleId(req, res, next) {
 }
 
 function getCommentsbyArticleId(req, res, next) {
-    selectCommentsbyArticleId(req.params)
+    selectCommentsbyArticleId(req.params, req.query)
     .then((comments) => res.status(200).send({comments}))
     .catch(next);
 };
